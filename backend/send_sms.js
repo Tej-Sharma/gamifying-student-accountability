@@ -22,7 +22,6 @@ const sendMessage = (number, messageBody) => {
 const sendAllMessages = (numbers, messageBody) => {
     numbers.forEach(number => {
         sendMessage(number, messageBody)
-        console.log("nj")
     });
 } 
 
