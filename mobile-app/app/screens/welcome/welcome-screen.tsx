@@ -1,6 +1,8 @@
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
+import firestore from "@react-native-firebase/firestore"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { observer } from "mobx-react-lite"
 import {
   Button,
@@ -11,7 +13,8 @@ import {
   AutoImage as Image,
 } from "../../components"
 import { color, spacing, typography } from "../../theme"
-import { NavigatorParamList } from "../../navigators"
+import { navigate, NavigatorParamList } from "../../navigators"
+import { Icon, Input } from "native-base"
 
 const bowserLogo = require("./bowser.png")
 
@@ -19,6 +22,7 @@ const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[4],
+  paddingVertical: spacing[6],
 }
 const TEXT: TextStyle = {
   color: color.palette.white,
@@ -68,6 +72,7 @@ const CONTENT: TextStyle = {
   fontSize: 15,
   lineHeight: 22,
   marginBottom: spacing[5],
+  textAlign: 'center',
 }
 const CONTINUE: ViewStyle = {
   paddingVertical: spacing[4],
@@ -88,28 +93,40 @@ const FOOTER_CONTENT: ViewStyle = {
 
 export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> = observer(
   ({ navigation }) => {
-    const nextScreen = () => navigation.navigate("demo")
+
+    const [phoneNumber, setPhoneNumber] = useState('')
+
+    const onboardUser = () => {
+      console.log('Calling this')
+      const userData = {
+        phoneNumber,
+      }
+      const db = firestore()
+
+      db.collection('users')
+            .doc(phoneNumber)
+            .set(userData)
+            .then(() => {
+              // Store the student data in firestore
+              navigation.navigate('home');
+            })
+            .catch((error) => {
+              console.log('ERROR handling operation');
+            })
+    }
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#422443", "#281b34"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-          <Header headerTx="welcomeScreen.poweredBy" style={HEADER} titleStyle={HEADER_TITLE} />
           <Text style={TITLE_WRAPPER}>
-            <Text style={TITLE} text="Your new app, " />
-            <Text style={ALMOST} text="almost" />
-            <Text style={TITLE} text="!" />
+            <Text style={TITLE} text="GSAT" />
           </Text>
-          <Text style={TITLE} preset="header" tx="welcomeScreen.readyForLaunch" />
           <Image source={bowserLogo} style={BOWSER} />
           <Text style={CONTENT}>
-            This probably isn't what your app is going to look like. Unless your designer handed you
-            this screen and, in that case, congrats! You're ready to ship.
+            Gamified Student Accountability Tracker
           </Text>
-          <Text style={CONTENT}>
-            For everyone else, this is where you'll see a live preview of your fully functioning app
-            using Ignite.
-          </Text>
+          <Input size="lg" placeholder="lg Input" placeholder="(xxx)-xxx-xxxx" onChangeText={(val) => setPhoneNumber(val)} style={{color: '#ffffff'}} />
         </Screen>
         <SafeAreaView style={FOOTER}>
           <View style={FOOTER_CONTENT}>
@@ -118,10 +135,10 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
               style={CONTINUE}
               textStyle={CONTINUE_TEXT}
               tx="welcomeScreen.continue"
-              onPress={nextScreen}
+              onPress={onboardUser}
             />
           </View>
-        </SafeAreaView>
+        </SafeAreaView>             
       </View>
     )
   },

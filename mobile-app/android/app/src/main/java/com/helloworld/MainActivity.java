@@ -1,4 +1,4 @@
-package com.helloworld;
+package com.gsat.app;
 
 import com.facebook.react.ReactActivity;
 
