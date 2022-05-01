@@ -14,7 +14,7 @@ import {
 } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { navigate, NavigatorParamList } from "../../navigators"
-import { Icon, Input } from "native-base"
+import { Box, Icon, Input } from "native-base"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const bowserLogo = require("./bowser.png")
@@ -62,10 +62,9 @@ const ALMOST: TextStyle = {
 }
 const BOWSER: ImageStyle = {
   alignSelf: "center",
-  marginVertical: spacing[5],
   maxWidth: "100%",
-  width: 343,
-  height: 230,
+  width: 353,
+  height: 350,
 }
 const CONTENT: TextStyle = {
   ...TEXT,
@@ -83,10 +82,11 @@ const CONTINUE: ViewStyle = {
 const CONTINUE_TEXT: TextStyle = {
   ...TEXT,
   ...BOLD,
+  color: 'white',
   fontSize: 13,
   letterSpacing: 2,
 }
-const FOOTER: ViewStyle = { backgroundColor: "#20162D" }
+const FOOTER: ViewStyle = { }
 const FOOTER_CONTENT: ViewStyle = {
   paddingVertical: spacing[4],
   paddingHorizontal: spacing[4],
@@ -102,7 +102,7 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
         name,
         phoneNumber,
       }
-      
+
       const db = firestore()
 
       db.collection("users")
@@ -125,22 +125,24 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
         <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
           <Text style={TITLE_WRAPPER}>
-            <Text style={TITLE} text="Gamifying Accountability" />
+            <Text style={TITLE} text="Gamified Accountability" />
           </Text>
           <Image source={bowserLogo} style={BOWSER} />
-          <Text style={CONTENT}>Group accountability leaderboard so the gang is on track</Text>
+          <Text style={CONTENT}>Student accountability so the whole gang grows together</Text>
           <Input
             size="lg"
             placeholder="Name"
             onChangeText={(val) => setName(val)}
-            style={{ color: "#ffffff" }}
+            style={{ color: "#c4c4c4" }}
           />
-          <Input
-            size="lg"
-            placeholder="(xxx)-xxx-xxxx"
-            onChangeText={(val) => setPhoneNumber(val)}
-            style={{ color: "#ffffff", marginTop: spacing[4] }}
-          />
+          <Box style={{marginTop: spacing[4]}}>
+            <Input
+              size="lg"
+              placeholder="(xxx)-xxx-xxxx"
+              onChangeText={(val) => setPhoneNumber(val)}
+              style={{ color: "#c4c4c4" }}
+            />
+          </Box>
         </Screen>
         <SafeAreaView style={FOOTER}>
           <View style={FOOTER_CONTENT}>

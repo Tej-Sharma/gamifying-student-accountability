@@ -20,8 +20,8 @@ app.get('/', function(req, res){
 
 app.post('/sendMessages', function(req, res) {
   console.log(req.body);
-  // sendAllMessages(req.body.numbers, req.body.messageToSend);
-  res.send("You just called the post method at '/hello'!\n");
+  sendAllMessages(req.body.numbers, req.body.messageToSend);
+  res.send("Messages sent");
 });
 
 app.listen(3000);

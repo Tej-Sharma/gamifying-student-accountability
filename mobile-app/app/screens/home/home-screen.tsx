@@ -127,6 +127,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
         
     }, [])
 
+
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
@@ -167,7 +168,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           icon={<AddIcon color="white" name="plus" size="sm" />}
           right={25}
           bottom={25}
-          backgroundColor="#963cc7"
+          backgroundColor="#5065A8"
           onPress={() => navigate("createGroup")}
         />
       </View>
