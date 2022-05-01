@@ -8,7 +8,13 @@ import React from "react"
 import { useColorScheme } from "react-native"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { WelcomeScreen, DemoScreen, DemoListScreen, HomeScreen } from "../screens"
+import {
+  WelcomeScreen,
+  DemoScreen,
+  DemoListScreen,
+  HomeScreen,
+  CreateGroupScreen,
+} from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 
 /**
@@ -28,6 +34,7 @@ export type NavigatorParamList = {
   demo: undefined
   demoList: undefined
   home: undefined
+  createGroup: undefined
   // 🔥 Your screens go here
 }
 
@@ -46,8 +53,7 @@ const AppStack = () => {
       <Stack.Screen name="demo" component={DemoScreen} />
       <Stack.Screen name="demoList" component={DemoListScreen} />
       <Stack.Screen name="home" component={HomeScreen} />
-
-      {/** 🔥 Your screens go here */}
+      <Stack.Screen name="createGroup" component={CreateGroupScreen} />
     </Stack.Navigator>
   )
 }

@@ -25,7 +25,7 @@ const CONTAINER: ViewStyle = {
   paddingVertical: spacing[6],
 }
 const TEXT: TextStyle = {
-  color: color.palette.white,
+  color: "grey",
   fontFamily: typography.primary,
 }
 const BOLD: TextStyle = { fontWeight: "bold" }
@@ -68,11 +68,11 @@ const BOWSER: ImageStyle = {
 }
 const CONTENT: TextStyle = {
   ...TEXT,
-  color: "#BAB6C8",
+  color: "grey",
   fontSize: 15,
   lineHeight: 22,
   marginBottom: spacing[5],
-  textAlign: 'center',
+  textAlign: "center",
 }
 const CONTINUE: ViewStyle = {
   paddingVertical: spacing[4],
@@ -93,40 +93,43 @@ const FOOTER_CONTENT: ViewStyle = {
 
 export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> = observer(
   ({ navigation }) => {
-
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState("")
 
     const onboardUser = () => {
-      console.log('Calling this')
+      console.log("Calling this")
       const userData = {
         phoneNumber,
       }
       const db = firestore()
 
-      db.collection('users')
-            .doc(phoneNumber)
-            .set(userData)
-            .then(() => {
-              // Store the student data in firestore
-              navigation.navigate('home');
-            })
-            .catch((error) => {
-              console.log('ERROR handling operation');
-            })
+      db.collection("users")
+        .doc(phoneNumber)
+        .set(userData)
+        .then(() => {
+          // Store the student data in firestore
+          navigation.navigate("home")
+        })
+        .catch((error) => {
+          console.log("ERROR handling operation")
+        })
     }
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
-        <GradientBackground colors={["#422443", "#281b34"]} />
+        <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
           <Text style={TITLE_WRAPPER}>
-            <Text style={TITLE} text="GSAT" />
+            <Text style={TITLE} text="Gamifying Accountability" />
           </Text>
           <Image source={bowserLogo} style={BOWSER} />
-          <Text style={CONTENT}>
-            Gamified Student Accountability Tracker
-          </Text>
-          <Input size="lg" placeholder="lg Input" placeholder="(xxx)-xxx-xxxx" onChangeText={(val) => setPhoneNumber(val)} style={{color: '#ffffff'}} />
+          <Text style={CONTENT}>Group accountability leaderboard so the gang is on track</Text>
+          <Input
+            size="lg"
+            placeholder="lg Input"
+            placeholder="(xxx)-xxx-xxxx"
+            onChangeText={(val) => setPhoneNumber(val)}
+            style={{ color: "#ffffff" }}
+          />
         </Screen>
         <SafeAreaView style={FOOTER}>
           <View style={FOOTER_CONTENT}>
@@ -138,7 +141,7 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
               onPress={onboardUser}
             />
           </View>
-        </SafeAreaView>             
+        </SafeAreaView>
       </View>
     )
   },
