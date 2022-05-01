@@ -7,14 +7,20 @@ const client = require('twilio')("ACe9c0638e7e63afb1078da19476317d3f", "5e45b21d
 
 
 var express = require('express');
+const bodyParser = require("body-parser");
 var app = express();
+
+// Configure body parser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get('/', function(req, res){
    res.send("Hello world!");
 });
 
 app.post('/sendMessages', function(req, res) {
-  sendAllMessages(req.body.numbers, req.body.messageToSend);
+  console.log(req.body);
+  // sendAllMessages(req.body.numbers, req.body.messageToSend);
   res.send("You just called the post method at '/hello'!\n");
 });
 
@@ -38,4 +44,4 @@ const sendAllMessages = (numbers, messageBody) => {
     });
 } 
 
-sendAllMessages(["+14845579287", "+12016009948"], "solo leveling");
+// sendAllMessages(["+14845579287", "+12016009948"], "solo leveling");
