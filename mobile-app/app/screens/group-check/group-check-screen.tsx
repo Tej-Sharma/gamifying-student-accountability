@@ -80,6 +80,14 @@ const CONTINUE: ViewStyle = {
   paddingHorizontal: spacing[4],
   backgroundColor: color.palette.deepPurple,
 }
+
+const DISABLED: ViewStyle = {
+  paddingVertical: spacing[4],
+  paddingHorizontal: spacing[4],
+  backgroundColor: color.palette.deepPurple,
+  opacity: 0.5,
+}
+
 const CONTINUE_TEXT: TextStyle = {
   ...TEXT,
   ...BOLD,
@@ -99,8 +107,6 @@ const TEXT_AREA: ViewStyle = {
 export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   function HomeScreen() {
     const [groupName, setGroupName] = useState("")
-    const [selectedItems, setSelectedItems] = useState([])
-    const [phoneNumbersText, setPhoneNumbersText] = useState("")
     const selectTasksRef = useRef(null)
 
     const route = useRoute()
@@ -113,8 +119,46 @@ export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> 
     
     }
 
-    const handleCheckBox = (task, val) => {
+    const handleCheckBox = async (task) => {
+      console.log('CHANGED');
+      if (completedTasks.includes(task)) {
+        setCompletedTasks(completedTasks.filter(t => t !== task))
+      } else {
+        setCompletedTasks([...completedTasks, task])
+      }
+    }
 
+    const submitDailyCheck = async () => {
+      const today = new Date();
+      let checkInDate = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+
+      const db = firestore();
+      const groupId = uuid.v4();
+      try {
+        let currentUserPhone = await AsyncStorage.getItem('currentUserPhone')
+        // Check if in dev mode
+        if(currentUserPhone === null) currentUserPhone = '4845579287';
+        // Create group
+        await db.collection('users')
+        .doc(currentUserPhone).collection('groups')
+        .doc(groupId)
+        .collection('checkins')
+        .doc(checkInDate)
+        .collection('users')
+        .doc(currentUserPhone)
+        .set({
+          completedTasks,
+          checkInTime: today,
+        }).then(() => {
+          console.log('Check-in completed')
+          navigate('home');
+        }).catch(error => {
+          console.log(error)
+        })
+          
+      } catch(e) {
+        // error reading value
+      }
     }
 
     return (
@@ -129,7 +173,7 @@ export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> 
             {groupData.groupTasks.map((task, index) => (
               <HStack key={task} justifyContent="space-between">
                 <Text style={{color: '#8c8c8c'}}>{constants.habitsMap[task]}</Text>
-                <Checkbox value={completedTasks.includes(task)} onToggle={(e) => handleCheckBox(task, e)} />
+                <Checkbox value={completedTasks.includes(task)} onToggle={(e) => handleCheckBox(task)} />
               </HStack>
             ))}
           </VStack>
@@ -144,7 +188,8 @@ export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> 
               testID="next-screen-button"
               style={CONTINUE}
               textStyle={CONTINUE_TEXT}
-              text="Send Group Update"
+              text="Submit Daily Check"
+              onPress={submitDailyCheck}
             />
           </View>
         </SafeAreaView>

@@ -94,13 +94,15 @@ const FOOTER_CONTENT: ViewStyle = {
 
 export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> = observer(
   ({ navigation }) => {
+    const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState("")
 
     const onboardUser = () => {
-      console.log("Calling this")
       const userData = {
+        name,
         phoneNumber,
       }
+      
       const db = firestore()
 
       db.collection("users")
@@ -129,10 +131,15 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
           <Text style={CONTENT}>Group accountability leaderboard so the gang is on track</Text>
           <Input
             size="lg"
-            placeholder="lg Input"
+            placeholder="Name"
+            onChangeText={(val) => setName(val)}
+            style={{ color: "#ffffff" }}
+          />
+          <Input
+            size="lg"
             placeholder="(xxx)-xxx-xxxx"
             onChangeText={(val) => setPhoneNumber(val)}
-            style={{ color: "#ffffff" }}
+            style={{ color: "#ffffff", marginTop: spacing[4] }}
           />
         </Screen>
         <SafeAreaView style={FOOTER}>
