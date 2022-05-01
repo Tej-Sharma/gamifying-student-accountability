@@ -7,9 +7,12 @@ import { navigate, NavigatorParamList } from "../../navigators"
 import { Button, GradientBackground, Screen, Text } from "../../components"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
-import { AddIcon, Box, Fab, TextArea } from "native-base"
+import { AddIcon, Box, Fab, Input, TextArea } from "native-base"
 import MultiSelect from "react-native-multiple-select"
 import constants from "../../utils/constants"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import uuid from "react-native-uuid"
+import firestore from "@react-native-firebase/firestore"
 
 const ROOT: ViewStyle = {
   backgroundColor: color.palette.black,
@@ -47,9 +50,9 @@ const TITLE_WRAPPER: TextStyle = {
 const TITLE: TextStyle = {
   ...TEXT,
   ...BOLD,
-  fontSize: 28,
-  lineHeight: 38,
-  textAlign: "center",
+  color: 'grey',
+  fontSize: 22,
+  lineHeight: 22,
 }
 const ALMOST: TextStyle = {
   ...TEXT,
@@ -93,42 +96,57 @@ const TEXT_AREA: ViewStyle = {
   marginTop: spacing[4],
   marginBottom: spacing[4],
 }
-// STOP! READ ME FIRST!
-// To fix the TS error below, you'll need to add the following things in your navigation config:
-// - Add `home: undefined` to NavigatorParamList
-// - Import your screen, and add it to the stack:
-//     `<Stack.Screen name="home" component={HomeScreen} />`
-// Hint: Look for the 🔥!
-
-// REMOVE ME! ⬇️ This TS ignore will not be necessary after you've added the correct navigator param type
-// @ts-ignore
 export const CreateGroupScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   function HomeScreen() {
-    // Pull in one of our MST stores
-    // const { someStore, anotherStore } = useStores()
-
-    // Pull in navigation via hook
-    // const navigation = useNavigation()
-
+    const [groupName, setGroupName] = useState("")
     const [selectedItems, setSelectedItems] = useState([])
     const [phoneNumbersText, setPhoneNumbersText] = useState("")
     const selectTasksRef = useRef(null)
 
-    const createGroup = () => {
+    const createGroup = async () => {
       let phoneNumbers = phoneNumbersText.split(/\r?\n/);
-      console.log(selectedItems)
+      const db = firestore();
+      const groupId = uuid.v4();
+      try {
+        let currentUserPhone = await AsyncStorage.getItem('currentUserPhone')
+        // Check if in dev mode
+        if(currentUserPhone === null) currentUserPhone = '4845579287';
+        // Create group
+        await db.collection('users')
+        .doc(currentUserPhone).collection('groups').doc(groupId).set({
+          groupId: groupId,
+          groupName: groupName,
+          groupMembers: phoneNumbers,
+          groupAdmin: currentUserPhone,
+          groupTasks: selectedItems
+        }).then(() => {
+          console.log('Group created')
+          navigate('home');
+        }).catch(error => {
+          console.log(error)
+        })
+          
+      } catch(e) {
+        // error reading value
+      }
     }
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
+          <Text style={TITLE}>Create Group</Text>
+          <Box style={{ marginTop: spacing[4] }}>
+          <Input placeholder="Group Name" onChangeText={(text) => setGroupName(text)}  />
+          </Box>
+          <Box style={{ marginTop: spacing[4] }}>
           <TextArea
             h={100}
             placeholder="Add friend's phone number on each line..."
             style={TEXT_AREA}
             onChangeText={(text) => setPhoneNumbersText(text)}
           />
+          </Box>
 
           <Box style={{ marginTop: spacing[4] }}>
             <MultiSelect

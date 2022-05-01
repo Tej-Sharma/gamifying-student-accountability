@@ -15,6 +15,7 @@ import {
 import { color, spacing, typography } from "../../theme"
 import { navigate, NavigatorParamList } from "../../navigators"
 import { Icon, Input } from "native-base"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const bowserLogo = require("./bowser.png")
 
@@ -106,11 +107,14 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
         .doc(phoneNumber)
         .set(userData)
         .then(() => {
-          // Store the student data in firestore
-          navigation.navigate("home")
+          AsyncStorage.setItem('currentUserPhone', phoneNumber).then(() => {
+            navigation.navigate("home")
+          }).catch((error) => {
+            console.log(error);
+          })
         })
         .catch((error) => {
-          console.log("ERROR handling operation")
+          console.log(error);
         })
     }
 
