@@ -130,10 +130,9 @@ export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> 
 
     const submitDailyCheck = async () => {
       const today = new Date();
-      let checkInDate = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+      let checkInDate = today.getDate() + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
 
       const db = firestore();
-      const groupId = uuid.v4();
       try {
         let currentUserPhone = await AsyncStorage.getItem('currentUserPhone')
         // Check if in dev mode
@@ -141,7 +140,7 @@ export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> 
         // Create group
         await db.collection('users')
         .doc(currentUserPhone).collection('groups')
-        .doc(groupId)
+        .doc(groupData.groupId)
         .collection('checkins')
         .doc(checkInDate)
         .collection('users')

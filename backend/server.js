@@ -5,7 +5,20 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')("ACe9c0638e7e63afb1078da19476317d3f", "5e45b21d82b757f761f26152d8856c62");
 
-//TODO: add dotenv
+
+var express = require('express');
+var app = express();
+
+app.get('/', function(req, res){
+   res.send("Hello world!");
+});
+
+app.post('/sendMessages', function(req, res) {
+  sendAllMessages(req.body.numbers, req.body.messageToSend);
+  res.send("You just called the post method at '/hello'!\n");
+});
+
+app.listen(3000);
 
 const sendMessage = (number, messageBody) => {
     client.messages
