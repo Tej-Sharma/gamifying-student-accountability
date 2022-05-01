@@ -14,6 +14,7 @@ import {
   DemoListScreen,
   HomeScreen,
   CreateGroupScreen,
+  GroupCheckScreen,
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 
@@ -35,6 +36,7 @@ export type NavigatorParamList = {
   demoList: undefined
   home: undefined
   createGroup: undefined
+  groupCheck: undefined
   // 🔥 Your screens go here
 }
 
@@ -54,6 +56,7 @@ const AppStack = () => {
       <Stack.Screen name="demoList" component={DemoListScreen} />
       <Stack.Screen name="home" component={HomeScreen} />
       <Stack.Screen name="createGroup" component={CreateGroupScreen} />
+      <Stack.Screen name="groupCheck" component={GroupCheckScreen} />
     </Stack.Navigator>
   )
 }

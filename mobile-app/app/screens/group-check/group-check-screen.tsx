@@ -1,18 +1,19 @@
-import React, { FC, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { color, spacing, typography } from "../../theme"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { navigate, NavigatorParamList } from "../../navigators"
-import { Button, GradientBackground, Screen, Text } from "../../components"
+import { Button, Checkbox, GradientBackground, Screen, Text } from "../../components"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
-import { AddIcon, Box, Fab, Input, TextArea } from "native-base"
+import { AddIcon, Box, Fab, HStack, Input, TextArea, VStack } from "native-base"
 import MultiSelect from "react-native-multiple-select"
 import constants from "../../utils/constants"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import uuid from "react-native-uuid"
 import firestore from "@react-native-firebase/firestore"
+import { useRoute } from "@react-navigation/native"
 
 const ROOT: ViewStyle = {
   backgroundColor: color.palette.black,
@@ -69,11 +70,10 @@ const BOWSER: ImageStyle = {
 }
 const CONTENT: TextStyle = {
   ...TEXT,
-  color: "#BAB6C8",
+  color: "#9e9e9e",
   fontSize: 15,
   lineHeight: 22,
   marginBottom: spacing[5],
-  textAlign: "center",
 }
 const CONTINUE: ViewStyle = {
   paddingVertical: spacing[4],
@@ -96,89 +96,46 @@ const TEXT_AREA: ViewStyle = {
   marginTop: spacing[4],
   marginBottom: spacing[4],
 }
-export const CreateGroupScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
+export const GroupCheckScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   function HomeScreen() {
     const [groupName, setGroupName] = useState("")
     const [selectedItems, setSelectedItems] = useState([])
     const [phoneNumbersText, setPhoneNumbersText] = useState("")
     const selectTasksRef = useRef(null)
 
-    const createGroup = async () => {
-      let phoneNumbers = [];
-      if (phoneNumbersText.length > 0) {
-        phoneNumbers = phoneNumbersText.split(/\r?\n/);
-      }
-      const db = firestore();
-      const groupId = uuid.v4();
-      try {
-        let currentUserPhone = await AsyncStorage.getItem('currentUserPhone')
-        // Check if in dev mode
-        if(currentUserPhone === null) currentUserPhone = '4845579287';
-        // Create group
-        await db.collection('users')
-        .doc(currentUserPhone).collection('groups').doc(groupId).set({
-          groupId: groupId,
-          groupName: groupName,
-          groupMembers: phoneNumbers,
-          groupAdmin: currentUserPhone,
-          groupTasks: selectedItems
-        }).then(() => {
-          console.log('Group created')
-          navigate('home');
-        }).catch(error => {
-          console.log(error)
-        })
-          
-      } catch(e) {
-        // error reading value
-      }
+    const route = useRoute()
+    const { groupData } = route.params
+
+    const [completedTasks, setCompletedTasks] = useState([]);
+
+
+    const sendGroupUpdate =  () => {
+    
+    }
+
+    const handleCheckBox = (task, val) => {
+
     }
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-          <Text style={TITLE}>Create Group</Text>
+          <Text style={TITLE}>Daily check for {groupData.groupName}</Text>
           <Box style={{ marginTop: spacing[4] }}>
-          <Input placeholder="Group Name" onChangeText={(text) => setGroupName(text)}  />
+          <Text style={CONTENT}>Honor system here, be honest!</Text>
           </Box>
-          <Box style={{ marginTop: spacing[4] }}>
-          <TextArea
-            h={100}
-            placeholder="Add friend's phone number on each line..."
-            style={TEXT_AREA}
-            onChangeText={(text) => setPhoneNumbersText(text)}
-          />
-          </Box>
+          <VStack style={{ marginTop: spacing[4] }}>
+            {groupData.groupTasks.map((task, index) => (
+              <HStack key={task} justifyContent="space-between">
+                <Text style={{color: '#8c8c8c'}}>{constants.habitsMap[task]}</Text>
+                <Checkbox value={completedTasks.includes(task)} onToggle={(e) => handleCheckBox(task, e)} />
+              </HStack>
+            ))}
+          </VStack>
 
           <Box style={{ marginTop: spacing[4] }}>
-            <MultiSelect
-              hideTags
-              items={constants.habits}
-              uniqueKey="id"
-              ref={selectTasksRef}
-              onSelectedItemsChange={(e) => setSelectedItems(e)}
-              selectedItems={selectedItems}
-              selectText="Pick tasks"
-              searchInputPlaceholderText="Add daily tasks..."
-              onChangeInput={(text) => console.log(text)}
-              altFontFamily="ProximaNova-Light"
-              tagRemoveIconColor="#CCC"
-              tagBorderColor="#CCC"
-              tagTextColor="#CCC"
-              selectedItemTextColor="#CCC"
-              selectedItemIconColor="#CCC"
-              itemTextColor="#000"
-              displayKey="name"
-              searchInputStyle={{ color: "#CCC" }}
-              submitButtonColor="#CCC"
-              submitButtonText="Submit"
-            />
-            <View>
-              {selectTasksRef.current && selectTasksRef.current.getSelectedItemsExt(selectedItems)}
-            </View>
-
-            <Text style={{ color: "grey", marginTop: spacing[4] }}>Daily check-in will be at 10pm.</Text>
+            
           </Box>
         </Screen>
         <SafeAreaView style={FOOTER}>
@@ -187,8 +144,7 @@ export const CreateGroupScreen: FC<StackScreenProps<NavigatorParamList, "home">>
               testID="next-screen-button"
               style={CONTINUE}
               textStyle={CONTINUE_TEXT}
-              text="Create Group"
-              onPress={createGroup}
+              text="Send Group Update"
             />
           </View>
         </SafeAreaView>

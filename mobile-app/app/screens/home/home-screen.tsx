@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { color, spacing, typography } from "../../theme"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
@@ -7,7 +7,10 @@ import { navigate, NavigatorParamList } from "../../navigators"
 import { GradientBackground, Screen, Text } from "../../components"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
-import { AddIcon, Fab } from "native-base"
+import { AddIcon, Box, Button, Fab, VStack } from "native-base"
+import firestore from "@react-native-firebase/firestore"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 const ROOT: ViewStyle = {
   backgroundColor: color.palette.black,
@@ -45,9 +48,9 @@ const TITLE_WRAPPER: TextStyle = {
 const TITLE: TextStyle = {
   ...TEXT,
   ...BOLD,
-  fontSize: 28,
-  lineHeight: 38,
-  textAlign: "center",
+  color: 'grey',
+  fontSize: 26,
+  lineHeight: 28,
 }
 const ALMOST: TextStyle = {
   ...TEXT,
@@ -87,40 +90,80 @@ const FOOTER_CONTENT: ViewStyle = {
   paddingHorizontal: spacing[4],
 }
 
-// STOP! READ ME FIRST!
-// To fix the TS error below, you'll need to add the following things in your navigation config:
-// - Add `home: undefined` to NavigatorParamList
-// - Import your screen, and add it to the stack:
-//     `<Stack.Screen name="home" component={HomeScreen} />`
-// Hint: Look for the 🔥!
-
-// REMOVE ME! ⬇️ This TS ignore will not be necessary after you've added the correct navigator param type
-// @ts-ignore
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   function HomeScreen() {
-    // Pull in one of our MST stores
-    // const { someStore, anotherStore } = useStores()
-
-    // Pull in navigation via hook
-    // const navigation = useNavigation()
-
     const [groups, setGroups] = useState([])
+
+    useEffect(() => {
+      // Get groups
+      const db = firestore()
+
+      const getUserPhone = async () => {
+        let result = await AsyncStorage.getItem('currentUserPhone')
+        return result;
+      }
+      getUserPhone().then(currentUserPhone => { 
+        // Check if in dev mode
+        if(!currentUserPhone) { 
+          currentUserPhone = '4845579287';
+          AsyncStorage.setItem('currentUserPhone', '4845579287');
+        }
+        db.collection('users')
+        .doc(currentUserPhone).collection('groups')
+        .get()
+        .then((querySnapshot) => {
+          const tempGroups = []
+          querySnapshot.forEach((doc) => {
+            tempGroups.push(doc.data())
+          })
+          setGroups(tempGroups);
+          console.log('Groups retrieved!');
+          console.log(tempGroups);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      });
+        
+    }, [])
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#ffffff", "#d4d4d4"]} />
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
+          <Text style={TITLE}>Your Groups</Text>
           {groups.length === 0 && (
             <View style={TITLE}>
               <Text style={{ color: "grey" }}>Welcome to the app!</Text>
               <Text style={{ color: "grey" }}>To get started, add a group.</Text>
             </View>
           )}
+          <VStack>
+            {groups.map((group, index) => (
+              <View key={index}>
+                  <Button
+                    style={{
+                      borderWidth: 2,
+                      borderRadius: 2,
+                      backgroundColor: '#ebebeb',
+                      borderColor: "#963cc7",
+                      marginTop: spacing[5],
+                    }}
+                    p="3"
+                    rounded="lg"
+                    _text={{ fontSize: "lg", fontWeight: "bold", color: "grey", textAlign: 'left' }}
+                    onPress={() => {navigate("groupCheck", { groupData: group })}}
+                  >
+                    {group.groupName}
+                  </Button>
+              </View>
+            ))}
+          </VStack>
         </Screen>
         <Fab
           renderInPortal={false}
           shadow={2}
-          size="sm"
+          size="lg"
           icon={<AddIcon color="white" name="plus" size="sm" />}
           right={25}
           bottom={25}

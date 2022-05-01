@@ -36,7 +36,18 @@ const constants = {
       id: "9",
       name: "Eat 1 fruit",
     },
-  ]
+  ],
+  habitsMap: {
+    "1": "Exercise 30 minutes",
+    "2": "Read 30 minutes",
+    "3": "Meditate 10 minutes",
+    "4": "Walk outside 10 minutes",
+    "5": "Study 60 minutes",
+    "6": "Cardio 20 minutes",
+    "7": "Sleep by midnight",
+    "8": "Journal 10 minutes",
+    "9": "Eat 1 fruit",
+  }
 }
 
-export default constants;
+export default constants

@@ -5,3 +5,4 @@ export * from "./error/error-boundary"
 // export other screens here
 export * from "./home/home-screen"
 export * from "./create-group/create-group-screen"
+export * from "./group-check/group-check-screen"
